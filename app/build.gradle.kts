@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.navigation.compose)
 
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.database)
     implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(project(":core:domain"))

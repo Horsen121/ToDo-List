@@ -33,7 +33,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.database)
     implementation(libs.junit.ktx)
     implementation(libs.kotlinx.coroutines.play.services)
     testImplementation(libs.junit)
