@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "com.example.feature.taskdetail"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
@@ -33,11 +33,15 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
+    implementation(project(":core:ui"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.junit.ktx)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.compose.material.icons.extended)
+
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
 }

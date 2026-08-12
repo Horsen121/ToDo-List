@@ -1,4 +1,4 @@
-package com.example.tasklist
+package com.example.testfixtures
 
 import org.junit.Test
 
