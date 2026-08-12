@@ -25,6 +25,7 @@ runtime = "1.11.4"
 hilt = "2.60.1"
 javaxInject = "1"
 ksp = "2.3.6"
+room = "2.8.4"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +61,10 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.4.0" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [bundles]
 compose = ["compose-ui", "compose-material3", "compose-ui-tooling-preview"]
