@@ -1,5 +1,6 @@
-package com.example.data.remote
+package com.example.data.remote.mapper
 
+import com.example.data.remote.dto.TaskDto
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 import com.google.firebase.database.DataSnapshot
