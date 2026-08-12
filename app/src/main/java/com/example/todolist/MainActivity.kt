@@ -7,6 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
+import com.example.todolist.di.AppModule
+import com.example.todolist.navigation.AppNavHost
 import com.example.todolist.ui.theme.ToDoListTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,6 +20,8 @@ class MainActivity : ComponentActivity() {
             ToDoListTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     // todolist-5b456
+                    val navController = rememberNavController()
+                    AppNavHost(navController, useCases = AppModule.taskUseCases)
                 }
             }
         }
