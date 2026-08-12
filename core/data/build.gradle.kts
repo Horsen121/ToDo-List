@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -36,6 +38,12 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.junit.ktx)
     implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.javax.inject)
+
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
 }

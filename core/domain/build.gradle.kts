@@ -9,6 +9,7 @@ kotlin {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
 
     testFixturesImplementation(libs.kotlinx.coroutines.test)
     testFixturesImplementation(libs.kotlinx.coroutines.core)
