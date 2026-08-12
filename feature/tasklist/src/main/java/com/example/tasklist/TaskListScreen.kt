@@ -23,11 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun TaskListScreen(
-    viewModel: TaskListViewModel,
+    viewModel: TaskListViewModel = hiltViewModel(),
     onTaskClick: (String) -> Unit,
     onAddClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }

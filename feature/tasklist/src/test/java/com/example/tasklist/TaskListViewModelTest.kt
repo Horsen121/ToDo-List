@@ -27,20 +27,15 @@ class TaskListViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private fun buildUseCases(repository: TaskRepository): TaskUseCases = TaskUseCases(
-        observeTasks = ObserveTasksUseCase(repository),
-        observeTaskById = ObserveTaskByIdUseCase(repository),
-        createTask = CreateTaskUseCase(repository),
-        takeInProgress = TakeInProgressUseCase(repository),
-        complete = CompleteTaskUseCase(repository),
-        delete = DeleteTaskUseCase(repository)
-    )
-
     @Test
     fun `uiState reflects tasks from repository`() = runTest {
         val repository = FakeTaskRepository()
-        val useCases = buildUseCases(repository)
-        val viewModel = TaskListViewModel(useCases)
+        val viewModel = TaskListViewModel(
+            observeTasks = ObserveTasksUseCase(repository),
+            takeInProgress = TakeInProgressUseCase(repository),
+            complete = CompleteTaskUseCase(repository),
+            delete = DeleteTaskUseCase(repository)
+        )
 
         repository.addTask("Тест", "Описание")
 
@@ -54,11 +49,15 @@ class TaskListViewModelTest {
     @Test
     fun `onDelete for in-progress task emits error event`() = runTest {
         val repository = FakeTaskRepository()
-        val useCases = buildUseCases(repository)
-        val viewModel = TaskListViewModel(useCases)
+        val viewModel = TaskListViewModel(
+            observeTasks = ObserveTasksUseCase(repository),
+            takeInProgress = TakeInProgressUseCase(repository),
+            complete = CompleteTaskUseCase(repository),
+            delete = DeleteTaskUseCase(repository)
+        )
         repository.addTask("Тест", "Описание")
         val task = repository.observeTasks().first().first()
-        useCases.takeInProgress(task)
+        viewModel.onTakeInProgress(task)
         val inProgressTask = repository.observeTasks().first().first()
 
         viewModel.events.test {

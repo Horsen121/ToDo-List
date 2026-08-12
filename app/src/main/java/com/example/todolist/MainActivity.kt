@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.todolist.di.AppModule
 import com.example.todolist.navigation.AppNavHost
 import com.example.todolist.ui.theme.ToDoListTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,9 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ToDoListTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // todolist-5b456
-                    val navController = rememberNavController()
-                    AppNavHost(navController, useCases = AppModule.taskUseCases)
+                    AppNavHost(rememberNavController())
                 }
             }
         }

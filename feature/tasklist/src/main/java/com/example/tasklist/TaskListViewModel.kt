@@ -1,11 +1,15 @@
 package com.example.tasklist
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Task
+import com.example.domain.usecase.CompleteTaskUseCase
+import com.example.domain.usecase.DeleteTaskUseCase
+import com.example.domain.usecase.ObserveTasksUseCase
+import com.example.domain.usecase.TakeInProgressUseCase
 import com.example.domain.usecase.TaskActionResult
-import com.example.domain.usecase.TaskUseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,23 +19,18 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class TaskListViewModelFactory(
-    private val useCases: TaskUseCases
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return TaskListViewModel(useCases) as T
-    }
-}
-
-class TaskListViewModel(
-    private val useCases: TaskUseCases
+@HiltViewModel
+class TaskListViewModel @Inject constructor(
+    private val observeTasks: ObserveTasksUseCase,
+    private val takeInProgress: TakeInProgressUseCase,
+    private val complete: CompleteTaskUseCase,
+    private val delete: DeleteTaskUseCase
 ) : ViewModel() {
 
     private val _events = Channel<TaskListEvent>(Channel.BUFFERED)
     val events: Flow<TaskListEvent> = _events.receiveAsFlow()
 
-    val uiState: StateFlow<TaskListUiState> = useCases.observeTasks()
+    val uiState: StateFlow<TaskListUiState> = observeTasks()
         .map { tasks ->
             try{
                 TaskListUiState.Success(tasks = tasks)
@@ -45,9 +44,9 @@ class TaskListViewModel(
             initialValue = TaskListUiState.Loading
         )
 
-    fun onTakeInProgress(task: Task) = runAction { useCases.takeInProgress(task) }
-    fun onComplete(task: Task) = runAction { useCases.complete(task) }
-    fun onDelete(task: Task) = runAction { useCases.delete(task) }
+    fun onTakeInProgress(task: Task) = runAction { takeInProgress(task) }
+    fun onComplete(task: Task) = runAction { complete(task) }
+    fun onDelete(task: Task) = runAction { delete(task) }
 
     private fun runAction(block: suspend () -> TaskActionResult) {
         viewModelScope.launch {

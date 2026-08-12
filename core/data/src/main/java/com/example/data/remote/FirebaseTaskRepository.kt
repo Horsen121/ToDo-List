@@ -11,9 +11,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class FirebaseTaskRepository(
-    private val tasksRef: DatabaseReference
+class FirebaseTaskRepository @Inject constructor(
+    @TasksReference private val tasksRef: DatabaseReference
 ) : TaskRepository {
 
     override fun observeTasks(): Flow<List<Task>> = callbackFlow {
