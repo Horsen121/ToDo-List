@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ui"
+    namespace = "com.example.core.ui"
     compileSdk {
         version = release(37)
     }
@@ -24,7 +24,5 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(platform(libs.compose.bom))
-    implementation(libs.bundles.compose)
-
-    testImplementation(kotlin("test"))
+    implementation(libs.bundles.compose.ui)
 }

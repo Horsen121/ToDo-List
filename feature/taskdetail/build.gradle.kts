@@ -18,15 +18,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -36,18 +27,18 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+
     implementation(platform(libs.compose.bom))
-    implementation(libs.bundles.compose)
-    implementation(libs.junit.ktx)
+    implementation(libs.bundles.compose.ui)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.activity.compose)
-    implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.compose.material.icons.extended)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.junit.ktx)
     testImplementation(libs.junit)
-    testImplementation(kotlin("test"))
 }

@@ -43,7 +43,7 @@ android {
 
 dependencies {
     implementation(platform(libs.compose.bom))
-    implementation(libs.bundles.compose)
+    implementation(libs.bundles.compose.ui)
     implementation(libs.room.ktx)
     debugImplementation(libs.compose.ui.tooling)
 
