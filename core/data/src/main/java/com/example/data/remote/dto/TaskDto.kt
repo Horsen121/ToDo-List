@@ -1,10 +1,11 @@
 package com.example.data.remote.dto
 
-import com.example.domain.model.TaskStatus
+import com.google.firebase.database.IgnoreExtraProperties
 
+@IgnoreExtraProperties
 data class TaskDto(
-    val shortDescription: String = "",
-    val fullDescription: String = "",
-    val status: String = TaskStatus.NEW.name,
-    val createdAt: Long = 0L
+    val shortDescription: String? = null,
+    val fullDescription: String? = null,
+    val status: String? = null,
+    val createdAt: Long? = null
 )
