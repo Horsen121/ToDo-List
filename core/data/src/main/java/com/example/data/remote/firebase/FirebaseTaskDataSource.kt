@@ -17,13 +17,18 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseTaskDataSource @Inject constructor(
-    @TasksReference private val tasksRef: DatabaseReference
+    @param:TasksReference private val tasksRef: DatabaseReference
 ) : TaskRemoteDataSource {
 
     override fun observeRemoteTasks(): Flow<List<Task>> = callbackFlow {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                trySend(snapshot.children.mapNotNull { it.toDomainTask() })
+                try {
+                    val tasks = snapshot.children.mapNotNull { it.toDomainTask() }
+                    trySend(tasks)
+                } catch (exception: Exception) {
+                    close(exception)
+                }
             }
             override fun onCancelled(error: DatabaseError) { close(error.toException()) }
         }

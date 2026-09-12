@@ -8,7 +8,6 @@ import com.example.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import kotlin.collections.map
 
 class RoomTaskDataSource @Inject constructor(
     private val taskDao: TaskDao
@@ -20,8 +19,7 @@ class RoomTaskDataSource @Inject constructor(
     override fun observeTaskById(taskId: String): Flow<Task?> =
         taskDao.observeById(taskId).map { it?.toDomain() }
 
-    override suspend fun replaceAll(tasks: List<Task>) {
-        taskDao.clearAll()
-        taskDao.upsertAll(tasks.map { it.toEntity() })
+    override suspend fun replaceCache(tasks: List<Task>) {
+        taskDao.replaceCache(tasks.map { it.toEntity() })
     }
 }

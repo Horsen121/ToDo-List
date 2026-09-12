@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface TaskLocalDataSource {
     fun observeTasks(): Flow<List<Task>>
     fun observeTaskById(taskId: String): Flow<Task?>
-    suspend fun replaceAll(tasks: List<Task>)
+    suspend fun replaceCache(tasks: List<Task>)
 }
