@@ -10,20 +10,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 abstract class TaskDao {
 
-    @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
+    @Query("SELECT * FROM tasks ORDER BY createdAt DESC, id ASC")
     abstract fun observeAll(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId LIMIT 1")
     abstract fun observeById(taskId: String): Flow<TaskEntity?>
 
     @Upsert
-    abstract suspend fun upsertAll(tasks: List<TaskEntity>)
-
-    @Query("DELETE FROM tasks WHERE id = :taskId")
-    abstract suspend fun deleteById(taskId: String)
+    protected abstract suspend fun upsertAll(tasks: List<TaskEntity>)
 
     @Query("DELETE FROM tasks")
-    abstract suspend fun clearAll()
+    protected abstract suspend fun clearAll()
 
     @Transaction
     open suspend fun replaceCache(tasks: List<TaskEntity>) {

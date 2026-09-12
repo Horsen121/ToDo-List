@@ -2,6 +2,7 @@ package com.example.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.data.local.InvalidLocalTaskDataException
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 
@@ -14,18 +15,25 @@ data class TaskEntity(
     val createdAt: Long
 )
 
-fun TaskEntity.toDomain() = Task(
-    id,
-    shortDescription,
-    fullDescription,
-    TaskStatus.valueOf(status),
-    createdAt
-)
+internal fun TaskEntity.toDomain(): Task {
+    val taskStatus = TaskStatus.entries.firstOrNull { taskStatus ->
+        taskStatus.name == status
+    } ?: throw InvalidLocalTaskDataException("Unknown local status '$status' for task '$id'")
 
-fun Task.toEntity() = TaskEntity(
-    id,
-    shortDescription,
-    fullDescription,
-    status.name,
-    createdAt
-)
+    return Task(
+        id = id,
+        shortDescription = shortDescription,
+        fullDescription = fullDescription,
+        status = taskStatus,
+        createdAt = createdAt
+    )
+}
+
+internal fun Task.toEntity(): TaskEntity =
+    TaskEntity(
+        id = id,
+        shortDescription = shortDescription,
+        fullDescription = fullDescription,
+        status = status.name,
+        createdAt = createdAt
+    )
