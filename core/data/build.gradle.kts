@@ -27,27 +27,30 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
     implementation(project(":core:domain"))
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
-    implementation(libs.junit.ktx)
     implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
+
     implementation(libs.javax.inject)
 
     implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
-    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

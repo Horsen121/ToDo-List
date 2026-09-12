@@ -25,6 +25,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -32,8 +33,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -43,9 +44,10 @@ android {
 dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.junit.ktx)
     implementation(libs.room.ktx)
     debugImplementation(libs.compose.ui.tooling)
+
+    androidTestImplementation(libs.junit.ktx)
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
 

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    alias(libs.plugins.kotlin.jvm)
     id("java-test-fixtures")
 }
 
@@ -11,11 +11,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
 
-    testFixturesImplementation(libs.kotlinx.coroutines.test)
-    testFixturesImplementation(libs.kotlinx.coroutines.core)
-    testFixturesImplementation(libs.junit)
+    testFixturesApi(libs.kotlinx.coroutines.test)
+    testFixturesApi(libs.junit)
 
-    testImplementation(libs.junit.junit)
+    testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 }

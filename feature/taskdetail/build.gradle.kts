@@ -28,8 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.compose.material.icons.extended)
-    implementation(libs.runtime)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

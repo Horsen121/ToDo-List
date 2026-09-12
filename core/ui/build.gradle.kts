@@ -15,8 +15,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
 }
@@ -25,7 +25,6 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.runtime)
 
     testImplementation(kotlin("test"))
 }
