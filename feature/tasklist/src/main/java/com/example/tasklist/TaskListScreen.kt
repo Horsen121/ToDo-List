@@ -68,7 +68,7 @@ fun TaskListScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Ошибка загрузки: ${(state as TaskListUiState.Error).error}")
+                Text("Ошибка загрузки: ${(state as TaskListUiState.Error).message}")
             }
             is TaskListUiState.Success -> {
                 val successState = (state as TaskListUiState.Success)

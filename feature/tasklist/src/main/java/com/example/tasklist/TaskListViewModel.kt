@@ -3,11 +3,11 @@ package com.example.tasklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Task
+import com.example.domain.toUserMessage
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTaskUseCase
 import com.example.domain.usecase.ObserveTasksUseCase
 import com.example.domain.usecase.TakeInProgressUseCase
-import com.example.domain.usecase.TaskActionResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
-    private val observeTasks: ObserveTasksUseCase,
+    observeTasks: ObserveTasksUseCase,
     private val takeInProgress: TakeInProgressUseCase,
     private val complete: CompleteTaskUseCase,
     private val delete: DeleteTaskUseCase
@@ -31,13 +31,7 @@ class TaskListViewModel @Inject constructor(
     val events: Flow<TaskListEvent> = _events.receiveAsFlow()
 
     val uiState: StateFlow<TaskListUiState> = observeTasks()
-        .map { tasks ->
-            try{
-                TaskListUiState.Success(tasks = tasks)
-            } catch (e: Throwable) {
-                TaskListUiState.Error(e.message ?: "")
-            }
-        }
+        .map { tasks -> TaskListUiState.Success(tasks = tasks) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -48,12 +42,16 @@ class TaskListViewModel @Inject constructor(
     fun onComplete(task: Task) = runAction { complete(task) }
     fun onDelete(task: Task) = runAction { delete(task) }
 
-    private fun runAction(block: suspend () -> TaskActionResult) {
+    private fun runAction(block: suspend () -> Result<Unit>) {
         viewModelScope.launch {
-            when (val result = block()) {
-                is TaskActionResult.Failure -> _events.send(TaskListEvent.ShowError(result.reason))
-                TaskActionResult.Success -> Unit
-            }
+            block().fold(
+                onSuccess = {},
+                onFailure = { error ->
+                    _events.send(TaskListEvent.ShowError(
+                        message = error.toUserMessage()
+                    ))
+                }
+            )
         }
     }
 }

@@ -17,7 +17,7 @@ class FakeTaskRepository: TaskRepository {
     override fun observeTaskById(taskId: String): Flow<Task?> =
         state.map { tasks -> tasks.find { it.id == taskId } }
 
-    override suspend fun addTask(shortDescription: String, fullDescription: String) {
+    override suspend fun addTask(shortDescription: String, fullDescription: String): Result<Unit> {
         val task = Task(
             id = "task_${idCounter++}",
             shortDescription = shortDescription,
@@ -26,13 +26,19 @@ class FakeTaskRepository: TaskRepository {
             createdAt = 0L
         )
         state.value += task
+
+        return Result.success(Unit)
     }
 
-    override suspend fun updateStatus(taskId: String, newStatus: TaskStatus) {
+    override suspend fun updateStatus(taskId: String, newStatus: TaskStatus): Result<Unit> {
         state.value = state.value.map { if (it.id == taskId) it.copy(status = newStatus) else it }
+
+        return Result.success(Unit)
     }
 
-    override suspend fun deleteTask(taskId: String) {
+    override suspend fun deleteTask(taskId: String): Result<Unit> {
         state.value = state.value.filterNot { it.id == taskId }
+
+        return Result.success(Unit)
     }
 }

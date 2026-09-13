@@ -2,7 +2,9 @@ package com.example.data
 
 import android.util.Log
 import com.example.data.local.TaskLocalDataSource
+import com.example.data.remote.RemoteTaskException.*
 import com.example.data.remote.TaskRemoteDataSource
+import com.example.data.remote.toTaskException
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 import com.example.domain.repository.TaskRepository
@@ -29,14 +31,20 @@ class TaskRepositoryImpl @Inject constructor(
     override fun observeTasks(): Flow<List<Task>> = localDataSource.observeTasks()
     override fun observeTaskById(taskId: String): Flow<Task?> = localDataSource.observeTaskById(taskId)
 
-    override suspend fun addTask(shortDescription: String, fullDescription: String) =
-        remoteDataSource.addTask(shortDescription, fullDescription)
+    override suspend fun addTask(shortDescription: String, fullDescription: String): Result<Unit> =
+        executeWrite {
+            remoteDataSource.addTask(shortDescription, fullDescription)
+        }
 
-    override suspend fun updateStatus(taskId: String, newStatus: TaskStatus) =
-        remoteDataSource.updateStatus(taskId, newStatus)
+    override suspend fun updateStatus(taskId: String, newStatus: TaskStatus): Result<Unit> =
+        executeWrite {
+            remoteDataSource.updateStatus(taskId, newStatus)
+        }
 
-    override suspend fun deleteTask(taskId: String) =
-        remoteDataSource.deleteTask(taskId)
+    override suspend fun deleteTask(taskId: String): Result<Unit> =
+        executeWrite {
+            remoteDataSource.deleteTask(taskId)
+        }
 
 
     init {
@@ -59,6 +67,19 @@ class TaskRepositoryImpl @Inject constructor(
                 retryAttempt = 0
             } catch (exception: CancellationException) {
                 throw exception
+            } catch (exception: InvalidRemoteTaskDataException) {
+                Log.e(
+                    TAG,
+                    "Stopping synchronization due to invalid remote task data",
+                    exception
+                )
+                return
+            } catch (exception: ObserveRemoteTasksException) {
+                Log.e(
+                    TAG,
+                    "Remote observation failed with code=${exception.errorCode}: ${exception.message}",
+                    exception
+                )
             } catch (exception: Exception) {
                 Log.e(
                     TAG,
@@ -79,5 +100,15 @@ class TaskRepositoryImpl @Inject constructor(
             2 -> 4.seconds
             3 -> 8.seconds
             else -> 16.seconds
+        }
+
+    private suspend fun executeWrite(block: suspend () -> Unit): Result<Unit> =
+        try {
+            block()
+            Result.success(Unit)
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            Result.failure(exception.toTaskException())
         }
 }

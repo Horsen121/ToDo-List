@@ -1,7 +1,7 @@
 package com.example.taskdetail
 
 sealed class AddTaskUiState {
-    data object Saving : AddTaskUiState()
+    data object Editing : AddTaskUiState()
     data object Saved : AddTaskUiState()
-    data class Error(val error: String): AddTaskUiState()
+    data class Error(val message: String): AddTaskUiState()
 }

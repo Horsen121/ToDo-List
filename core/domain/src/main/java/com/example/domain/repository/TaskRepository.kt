@@ -8,7 +8,10 @@ interface TaskRepository {
 
     fun observeTasks(): Flow<List<Task>>
     fun observeTaskById(taskId: String): Flow<Task?>
-    suspend fun addTask(shortDescription: String, fullDescription: String)
-    suspend fun updateStatus(taskId: String, newStatus: TaskStatus)
-    suspend fun deleteTask(taskId: String)
+
+    suspend fun addTask(shortDescription: String, fullDescription: String): Result<Unit>
+
+    suspend fun updateStatus(taskId: String, newStatus: TaskStatus): Result<Unit>
+
+    suspend fun deleteTask(taskId: String): Result<Unit>
 }

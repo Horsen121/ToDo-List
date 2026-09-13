@@ -1,5 +1,7 @@
 package com.example.data.remote
 
+import com.example.domain.TaskException
+
 sealed class RemoteTaskException(
     message: String,
     cause: Throwable? = null
@@ -29,3 +31,17 @@ enum class RemoteTaskOperation {
     UPDATE_STATUS,
     DELETE
 }
+
+internal fun Exception.toTaskException(): TaskException =
+    when (this) {
+        is TaskException -> this
+
+        is RemoteTaskException.InvalidRemoteTaskDataException ->
+            TaskException.InvalidTaskDataException(this)
+
+        is RemoteTaskException.RemoteTaskWriteException ->
+            TaskException.TaskStorageUnavailableException(this)
+
+        else ->
+            TaskException.UnknownTaskException(this)
+    }

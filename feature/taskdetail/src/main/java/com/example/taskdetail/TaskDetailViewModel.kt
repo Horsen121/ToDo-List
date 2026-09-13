@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
-    private val observeTaskById: ObserveTaskByIdUseCase,
+    observeTaskById: ObserveTaskByIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

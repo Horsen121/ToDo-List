@@ -36,7 +36,7 @@ fun AddTaskScreen(
     var fullDescription by remember { mutableStateOf("") }
 
     LaunchedEffect(state ) {
-        if ((state is AddTaskUiState.Saving)) onTaskCreated()
+        if ((state is AddTaskUiState.Editing)) onTaskCreated()
     }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Новая задача") }) }) { padding ->
@@ -45,11 +45,11 @@ fun AddTaskScreen(
                 value = shortDescription,
                 onValueChange = { shortDescription = it },
                 label = { Text("Краткое описание") },
-                isError = (state as? AddTaskUiState.Error)?.error?.isEmpty() ?: false,
-                enabled = state !is AddTaskUiState.Saving,
+                isError = (state as? AddTaskUiState.Error)?.message?.isEmpty() ?: false,
+                enabled = state !is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth()
             )
-            (state as? AddTaskUiState.Error)?.error?.let {
+            (state as? AddTaskUiState.Error)?.message?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
             Spacer(Modifier.height(12.dp))
@@ -58,17 +58,17 @@ fun AddTaskScreen(
                 value = fullDescription,
                 onValueChange = { fullDescription = it },
                 label = { Text("Полное описание") },
-                enabled = state !is AddTaskUiState.Saving,
+                enabled = state !is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth().height(150.dp)
             )
             Spacer(Modifier.height(16.dp))
 
             Button(
                 onClick = { viewModel.onSave(shortDescription, fullDescription) },
-                enabled = state !is AddTaskUiState.Saving,
+                enabled = state !is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (state is AddTaskUiState.Saving) {
+                if (state is AddTaskUiState.Editing) {
                     CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                 } else {
                     Text("Сохранить")

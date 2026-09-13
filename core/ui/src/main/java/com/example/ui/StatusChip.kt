@@ -6,9 +6,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.domain.model.TaskStatus
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
 @Composable
 fun StatusChip(status: TaskStatus) {
@@ -24,7 +27,11 @@ fun StatusChip(status: TaskStatus) {
     )
 }
 
-fun formatTaskDate(timestamp: Long): String {
-    val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale("ru"))
-    return formatter.format(Date(timestamp))
-}
+fun formatTaskDate(
+    timestamp: Long,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+    locale: Locale = Locale.getDefault()
+): String =
+    Instant.ofEpochMilli(timestamp)
+        .atZone(zoneId)
+        .format(formatter.withLocale(locale))
