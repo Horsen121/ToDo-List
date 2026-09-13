@@ -5,12 +5,14 @@ import com.example.data.local.TaskLocalDataSource
 import com.example.data.remote.RemoteTaskException.*
 import com.example.data.remote.TaskRemoteDataSource
 import com.example.data.remote.mapper.toTaskException
+import com.example.domain.TaskException
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 import com.example.domain.repository.TaskRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -27,6 +29,11 @@ class TaskRepositoryImpl @Inject constructor(
         const val TAG = "TaskRepository"
         const val MAX_RETRY_ATTEMPT = 4
     }
+
+    private val _synchronizationErrors = MutableSharedFlow<TaskException>(replay = 0, extraBufferCapacity = 1)
+
+    override val synchronizationErrors: Flow<TaskException>
+        get() = _synchronizationErrors
 
     override fun observeTasks(): Flow<List<Task>> = localDataSource.observeTasks()
     override fun observeTaskById(taskId: String): Flow<Task?> = localDataSource.observeTaskById(taskId)
@@ -55,25 +62,42 @@ class TaskRepositoryImpl @Inject constructor(
 
     private suspend fun runSynchronizationLoop() {
         var retryAttempt = 0
+        var invalidDataHandled = false
 
         while (true) {
             try {
+                if (!invalidDataHandled) {
                 remoteDataSource.observeRemoteTasks()
                     .collect { remoteTasks ->
                         localDataSource.replaceCache(remoteTasks)
                         retryAttempt = 0
                     }
-
+                } else {
+                    remoteDataSource.observeRemoteTasks()
+                        .collect { remoteTasks ->
+                            val validTasks = remoteTasks.filter { task ->
+                                isValidTask(task)
+                            }
+                            localDataSource.replaceCache(validTasks)
+                            retryAttempt = 0
+                        }
+                }
                 retryAttempt = 0
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: InvalidRemoteTaskDataException) {
-                Log.e(
-                    TAG,
-                    "Stopping synchronization due to invalid remote task data",
-                    exception
-                )
-                return
+                if (!invalidDataHandled) {
+                    _synchronizationErrors.emit(
+                        TaskException.InvalidTaskDataException(exception)
+                    )
+                    invalidDataHandled = true
+                } else {
+                    Log.e(
+                        TAG,
+                        "Ignoring invalid remote task data after previous error",
+                        exception
+                    )
+                }
             } catch (exception: ObserveRemoteTasksException) {
                 Log.e(
                     TAG,
@@ -111,4 +135,7 @@ class TaskRepositoryImpl @Inject constructor(
         } catch (exception: Exception) {
             Result.failure(exception.toTaskException())
         }
+
+    private fun isValidTask(task: Task): Boolean =
+        task.shortDescription.isNotBlank()
 }

@@ -3,6 +3,7 @@ package com.example.tasklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Task
+import com.example.domain.repository.TaskRepository
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTaskUseCase
 import com.example.domain.usecase.ObserveTasksUseCase
@@ -24,7 +25,8 @@ class TaskListViewModel @Inject constructor(
     observeTasks: ObserveTasksUseCase,
     private val takeInProgress: TakeInProgressUseCase,
     private val complete: CompleteTaskUseCase,
-    private val delete: DeleteTaskUseCase
+    private val delete: DeleteTaskUseCase,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val _events = Channel<TaskListEvent>(Channel.BUFFERED)
@@ -37,6 +39,18 @@ class TaskListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = TaskListUiState.Loading
         )
+
+    init {
+        viewModelScope.launch {
+            taskRepository.synchronizationErrors.collect { error ->
+                _events.send(
+                    TaskListEvent.ShowError(
+                        message = error.toUiText()
+                    )
+                )
+            }
+        }
+    }
 
     fun onTakeInProgress(task: Task) = runAction { takeInProgress(task) }
     fun onComplete(task: Task) = runAction { complete(task) }

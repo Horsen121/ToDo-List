@@ -1,10 +1,12 @@
 package com.example.domain.repository
 
+import com.example.domain.TaskException
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
+    val synchronizationErrors: Flow<TaskException>
 
     fun observeTasks(): Flow<List<Task>>
     fun observeTaskById(taskId: String): Flow<Task?>
