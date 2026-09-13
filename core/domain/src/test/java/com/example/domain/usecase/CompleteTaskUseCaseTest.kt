@@ -3,7 +3,6 @@ package com.example.domain.usecase
 import com.example.domain.fake.FakeTaskRepository
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -24,7 +23,7 @@ class CompleteTaskUseCaseTest {
 
         val result = useCase(newTask)
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 
     @Test
@@ -39,6 +38,6 @@ class CompleteTaskUseCaseTest {
 
         val result = useCase(inProgress)
 
-        assertEquals(TaskActionResult.Success, result)
+        assertTrue(result.isSuccess)
     }
 }

@@ -20,7 +20,7 @@ class TakeInProgressUseCaseTest {
 
         val result = useCase(task)
 
-        assertEquals(TaskActionResult.Success, result)
+        assertTrue(result.isSuccess)
         val updated = repository.observeTasks().first().first()
         assertEquals(TaskStatus.IN_PROGRESS, updated.status)
     }
@@ -34,7 +34,7 @@ class TakeInProgressUseCaseTest {
 
         val result = useCase(task)
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 
     @Test
@@ -49,6 +49,6 @@ class TakeInProgressUseCaseTest {
 
         val result = useCase(done)
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 }

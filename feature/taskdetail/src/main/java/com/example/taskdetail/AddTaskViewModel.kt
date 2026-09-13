@@ -2,8 +2,8 @@ package com.example.taskdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.toUserMessage
 import com.example.domain.usecase.CreateTaskUseCase
+import com.example.ui.toUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,11 +25,11 @@ class AddTaskViewModel @Inject constructor(
             _uiState.update { AddTaskUiState.Editing }
             createTask(shortDescription, fullDescription).fold(
                 onSuccess = {
-                    _uiState.value = AddTaskUiState.Saved
+                    _uiState.value = AddTaskUiState.Saving
                 },
                 onFailure = { error ->
                     _uiState.value = AddTaskUiState.Error(
-                        message = error.toUserMessage()
+                        message = error.toUiText()
                     )
                 }
             )

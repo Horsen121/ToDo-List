@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.data.local.TaskLocalDataSource
 import com.example.data.remote.RemoteTaskException.*
 import com.example.data.remote.TaskRemoteDataSource
-import com.example.data.remote.toTaskException
+import com.example.data.remote.mapper.toTaskException
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
 import com.example.domain.repository.TaskRepository

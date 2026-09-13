@@ -1,6 +1,7 @@
 package com.example.tasklist
 
 import com.example.domain.model.Task
+import com.example.ui.UiText
 
 sealed class TaskListUiState {
     data object Loading: TaskListUiState()
@@ -9,5 +10,5 @@ sealed class TaskListUiState {
 }
 
 sealed interface TaskListEvent {
-    data class ShowError(val message: String) : TaskListEvent
+    data class ShowError(val message: UiText) : TaskListEvent
 }

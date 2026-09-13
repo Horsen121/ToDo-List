@@ -16,7 +16,7 @@ class CreateTaskUseCaseTest {
     fun `task with valid description is created successfully`() = runTest {
         val result = useCase("Написать тесты", "Написать тесты для UseCase Domain")
 
-        assertEquals(TaskActionResult.Success, result)
+        assertTrue(result.isSuccess)
         val tasks = repository.observeTasks().first()
         assertEquals(1, tasks.size)
         assertEquals(TaskStatus.NEW, tasks.first().status)
@@ -26,7 +26,7 @@ class CreateTaskUseCaseTest {
     fun `task with blank short description is rejected`() = runTest {
         val result = useCase("", "Полное описание")
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
         assertTrue(repository.observeTasks().first().isEmpty())
     }
 
@@ -34,6 +34,6 @@ class CreateTaskUseCaseTest {
     fun `task with blank short description consisting of spaces is rejected`() = runTest {
         val result = useCase("   ", "Полное описание")
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 }

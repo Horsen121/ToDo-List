@@ -3,7 +3,6 @@ package com.example.domain.usecase
 import com.example.domain.fake.FakeTaskRepository
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -25,7 +24,7 @@ class DeleteTaskUseCaseTest {
 
         val result = useCase(inProgress)
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 
     @Test
@@ -39,7 +38,7 @@ class DeleteTaskUseCaseTest {
         )
         val result = useCase(done)
 
-        assertTrue(result is TaskActionResult.Failure)
+        assertTrue(result.isFailure)
     }
 
     @Test
@@ -49,7 +48,7 @@ class DeleteTaskUseCaseTest {
 
         val result = useCase(task)
 
-        assertEquals(TaskActionResult.Success, result)
+        assertTrue(result.isSuccess)
         assertTrue(repository.observeTasks().first().isEmpty())
     }
 }

@@ -21,9 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.asString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,25 +34,40 @@ fun AddTaskScreen(
     onTaskCreated: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var shortDescription by remember { mutableStateOf("") }
     var fullDescription by remember { mutableStateOf("") }
 
     LaunchedEffect(state ) {
-        if ((state is AddTaskUiState.Editing)) onTaskCreated()
+        if ((state is AddTaskUiState.Saving)) onTaskCreated()
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Новая задача") }) }) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp).fillMaxWidth()) {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Новая задача") })
+        }
+    ) { padding ->
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
             OutlinedTextField(
                 value = shortDescription,
                 onValueChange = { shortDescription = it },
                 label = { Text("Краткое описание") },
-                isError = (state as? AddTaskUiState.Error)?.message?.isEmpty() ?: false,
-                enabled = state !is AddTaskUiState.Editing,
+                isError = (state is AddTaskUiState.Error),
+                enabled = state is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth()
             )
-            (state as? AddTaskUiState.Error)?.message?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            val errorMessage = (state as? AddTaskUiState.Error)?.message?.asString(context)
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             Spacer(Modifier.height(12.dp))
 
@@ -58,17 +75,17 @@ fun AddTaskScreen(
                 value = fullDescription,
                 onValueChange = { fullDescription = it },
                 label = { Text("Полное описание") },
-                enabled = state !is AddTaskUiState.Editing,
+                enabled = state is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth().height(150.dp)
             )
             Spacer(Modifier.height(16.dp))
 
             Button(
                 onClick = { viewModel.onSave(shortDescription, fullDescription) },
-                enabled = state !is AddTaskUiState.Editing,
+                enabled = state is AddTaskUiState.Editing,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (state is AddTaskUiState.Editing) {
+                if (state is AddTaskUiState.Saving) {
                     CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                 } else {
                     Text("Сохранить")

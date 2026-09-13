@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_task_action_unavailable">Действие с задачей недоступно</string>
+
+    <string name="error_task_storage_unavailable">Не удалось подключиться к хранилищу задач</string>
+
+    <string name="error_invalid_task_data">Получены некорректные данные задачи</string>
+
+    <string name="error_unknown_task">Не удалось выполнить операцию</string>
+
+    <string name="error_unknown">Произошла неизвестная ошибка</string>
+</resources>

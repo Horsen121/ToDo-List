@@ -30,21 +30,3 @@ sealed class TaskException(
         cause = cause
     )
 }
-
-fun Throwable.toUserMessage(): String =
-    when (this) {
-        is TaskException.InvalidTaskActionException ->
-            message ?: "Действие с задачей недоступно"
-
-        is TaskException.TaskStorageUnavailableException ->
-            "Не удалось подключиться к хранилищу задач"
-
-        is TaskException.InvalidTaskDataException ->
-            "Получены некорректные данные задачи"
-
-        is TaskException.UnknownTaskException ->
-            "Не удалось выполнить операцию"
-
-        else ->
-            "Произошла неизвестная ошибка"
-    }

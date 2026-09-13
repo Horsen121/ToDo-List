@@ -3,11 +3,11 @@ package com.example.tasklist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.Task
-import com.example.domain.toUserMessage
 import com.example.domain.usecase.CompleteTaskUseCase
 import com.example.domain.usecase.DeleteTaskUseCase
 import com.example.domain.usecase.ObserveTasksUseCase
 import com.example.domain.usecase.TakeInProgressUseCase
+import com.example.ui.toUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -48,7 +48,7 @@ class TaskListViewModel @Inject constructor(
                 onSuccess = {},
                 onFailure = { error ->
                     _events.send(TaskListEvent.ShowError(
-                        message = error.toUserMessage()
+                        message = error.toUiText()
                     ))
                 }
             )
