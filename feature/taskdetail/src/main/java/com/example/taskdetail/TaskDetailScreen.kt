@@ -20,8 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.Task
+import com.example.feature.taskdetail.R
 import com.example.ui.StatusChip
 import com.example.ui.formatTaskDate
 
@@ -33,10 +36,13 @@ fun TaskDetailScreen(viewModel: TaskDetailViewModel, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Детали задачи") },
+                title = { Text(stringResource(R.string.screen_task_detail_top_bar)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.screen_task_detail_back)
+                        )
                     }
                 }
             )
@@ -47,39 +53,76 @@ fun TaskDetailScreen(viewModel: TaskDetailViewModel, onBack: () -> Unit) {
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            when (val current = state) {
+            when (state) {
                 TaskDetailUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                 TaskDetailUiState.NotFound -> Text(
-                    "Задача не найдена или была удалена",
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp)
+                    stringResource(R.string.screen_task_detail_not_found),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp)
                 )
-                is TaskDetailUiState.Content ->
-                    Column(
-                        Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            current.task.shortDescription,
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        Spacer(Modifier.height(8.dp))
-
-                        Text(
-                            current.task.fullDescription,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(Modifier.height(16.dp))
-
-                        StatusChip(current.task.status)
-                        Spacer(Modifier.height(16.dp))
-
-                        Text(
-                            "Создана: ${formatTaskDate(current.task.createdAt)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                is TaskDetailUiState.Content -> ContentScreen((state as TaskDetailUiState.Content).task)
             }
         }
     }
+}
+
+@Composable
+private fun ContentScreen(
+    task: Task,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier.padding(16.dp)
+    ) {
+        TaskTitle(task.shortDescription)
+        TaskDescription(task.fullDescription)
+
+        StatusChip(task.status)
+        Spacer(Modifier.height(16.dp))
+
+        TaskCreatingTime(task.createdAt)
+    }
+}
+
+@Composable
+private fun TaskTitle(
+    shortDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        shortDescription,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = modifier
+    )
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+private fun TaskDescription(
+    fullDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        fullDescription,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = modifier
+    )
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+private fun TaskCreatingTime(
+    createdAt: Long,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        stringResource(
+            R.string.screen_task_detail_time_of_creating,
+            formatTaskDate(createdAt)
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+    )
 }

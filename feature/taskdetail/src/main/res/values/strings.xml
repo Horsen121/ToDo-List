@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="screen_add_task_new_task">Новая задача</string>
+    <string name="screen_add_task_short_desc">Краткое описание</string>
+    <string name="screen_add_task_full_desc">Полное описание</string>
+    <string name="screen_add_task_save">Сохранить</string>
+
+    <string name="screen_task_detail_top_bar">Детали задачи</string>
+    <string name="screen_task_detail_back">Назад</string>
+    <string name="screen_task_detail_not_found">Задача не найдена или была удалена</string>
+    <string name="screen_task_detail_time_of_creating">Создана: %1$s</string>
+</resources>
