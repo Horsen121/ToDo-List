@@ -23,9 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.feature.tasklist.R
 import com.example.ui.asString
 
 @Composable
@@ -52,59 +54,87 @@ fun TaskListScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddClick) {
-                Icon(Icons.Default.Add, contentDescription = "Добавить задачу")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.screen_action_create_task))
             }
         }
     ) { padding ->
         when(state) {
-            is TaskListUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-            is TaskListUiState.Error -> Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Ошибка загрузки: ${(state as TaskListUiState.Error).message}")
-            }
-            is TaskListUiState.Success -> {
-                val successState = (state as TaskListUiState.Success)
-                if (successState.tasks.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Задач пока нет. Нажмите + чтобы добавить.")
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        contentPadding = PaddingValues(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(successState.tasks, key = { it.id }) { task ->
-                            TaskItem(
-                                task = task,
-                                onClick = { onTaskClick(task.id) },
-                                onTakeInProgress = { viewModel.onTakeInProgress(task) },
-                                onComplete = { viewModel.onComplete(task) },
-                                onDelete = { viewModel.onDelete(task) }
-                            )
-                        }
-                    }
-                }
+            is TaskListUiState.Loading -> LoadingScreen(padding)
+            is TaskListUiState.Error -> ErrorScreen(padding, state as TaskListUiState.Error)
+            is TaskListUiState.Success -> SuccessScreen(
+                padding,
+                state as TaskListUiState.Success,
+                onTaskClick,
+                viewModel
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoadingScreen(
+    padding: PaddingValues,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(padding),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ErrorScreen(
+    padding: PaddingValues,
+    state: TaskListUiState.Error,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(padding),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(stringResource(R.string.screen_text_empty_task_list, state.message))
+    }
+}
+
+@Composable
+private fun SuccessScreen(
+    padding: PaddingValues,
+    state: TaskListUiState.Success,
+    onTaskClick: (String) -> Unit,
+    viewModel: TaskListViewModel,
+    modifier: Modifier = Modifier
+) {
+    if (state.tasks.isEmpty()) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(stringResource(R.string.screen_text_empty_task_list))
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentPadding = PaddingValues(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(state.tasks, key = { it.id }) { task ->
+                TaskItem(
+                    task = task,
+                    onClick = { onTaskClick(task.id) },
+                    onTakeInProgress = { viewModel.onTakeInProgress(task) },
+                    onComplete = { viewModel.onComplete(task) },
+                    onDelete = { viewModel.onDelete(task) }
+                )
             }
         }
     }

@@ -22,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.domain.model.Task
 import com.example.domain.model.TaskStatus
+import com.example.feature.tasklist.R
 import com.example.ui.StatusChip
 import com.example.ui.formatTaskDate
 
@@ -45,43 +47,74 @@ fun TaskItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(task.shortDescription, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                StatusChip(task.status)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    formatTaskDate(task.createdAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (task.status == TaskStatus.NEW) {
-                    TextButton(onClick = onTakeInProgress) { Text("Взять в работу") }
-                }
-                if (task.status == TaskStatus.IN_PROGRESS) {
-                    TextButton(onClick = onComplete) { Text("Выполнить") }
-                }
-                if (task.status == TaskStatus.NEW) {
-                    TextButton(onClick = { showDeleteConfirmation = true }) { Text("Удалить") }
-                }
-            }
+            CardTitle(task.shortDescription)
+            CardBody(task)
+            CardFooter(
+                task.status,
+                onTakeInProgress,
+                onComplete
+            ) { showDeleteConfirmation = true }
         }
     }
 
     if (showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmation = false },
-            title = { Text("Удалить задачу?") },
-            text = { Text("Действие необратимо.") },
+            title = { Text(stringResource(R.string.alert_title)) },
+            text = { Text(stringResource(R.string.alert_text)) },
             confirmButton = {
-                TextButton(onClick = { onDelete(); showDeleteConfirmation = false }) { Text("Удалить") }
+                TextButton(onClick = { onDelete(); showDeleteConfirmation = false }) { Text(stringResource(R.string.alert_action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirmation = false }) { Text("Отмена") }
+                TextButton(onClick = { showDeleteConfirmation = false }) { Text(stringResource(R.string.alert_action_cancel)) }
             }
         )
+    }
+}
+
+@Composable
+private fun CardTitle(
+    shortDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Text(shortDescription, style = MaterialTheme.typography.titleMedium)
+    Spacer(modifier.height(4.dp))
+}
+
+@Composable
+private fun CardBody(
+    task: Task,
+    modifier: Modifier = Modifier
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        StatusChip(task.status)
+        Spacer(modifier.width(8.dp))
+
+        Text(
+            formatTaskDate(task.createdAt),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+    Spacer(modifier.height(8.dp))
+}
+
+@Composable
+private fun CardFooter(
+    status: TaskStatus,
+    onTakeInProgress: () -> Unit,
+    onComplete: () -> Unit,
+    onShowDeleteConfirmation: (Boolean) -> Unit
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (status == TaskStatus.NEW) {
+            TextButton(onClick = onTakeInProgress) { Text(stringResource(R.string.task_action_get_to_work)) }
+        }
+        if (status == TaskStatus.IN_PROGRESS) {
+            TextButton(onClick = onComplete) { Text(stringResource(R.string.task_action_set_to_done)) }
+        }
+        if (status == TaskStatus.NEW) {
+            TextButton(onClick = { onShowDeleteConfirmation(true) }) { Text(stringResource(R.string.task_action_delete)) }
+        }
     }
 }

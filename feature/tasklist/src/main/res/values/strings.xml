@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="screen_action_create_task">Добавить задачу</string>
+    <string name="screen_message_loading_error">Ошибка загрузки: %1$s</string>
+    <string name="screen_text_empty_task_list">Задач пока нет. Нажмите + чтобы добавить.</string>
+
+
+    <string name="task_action_get_to_work">Взять в работу</string>
+    <string name="task_action_set_to_done">Выполнить</string>
+    <string name="task_action_delete">Удалить</string>
+
+    <string name="alert_title">Удалить задачу?</string>
+    <string name="alert_text">Действие необратимо.</string>
+    <string name="alert_action_delete">Удалить</string>
+    <string name="alert_action_cancel">Отмена</string>
+</resources>
